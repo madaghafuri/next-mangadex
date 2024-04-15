@@ -1,0 +1,136 @@
+export const baseUrl = "https://api.mangadex.org";
+
+export interface BaseResponse<Res = "collection"> {
+  result: string;
+  response: Res;
+  data: Res extends "collection"
+    ? Data[]
+    : Res extends "entity"
+    ? Data
+    : Data[];
+  limit: number;
+  offset: number;
+  total: number;
+}
+
+export interface Data<T = "manga"> {
+  id: string;
+  type: T extends "manga" ? "manga" : "";
+  attributes: T extends "manga"
+    ? MangaAttr
+    : T extends "chapter"
+    ? ChapterAttributes
+    : never;
+  relationships: T extends "manga" ? MangaRelationship[] : [];
+}
+
+export interface Tag {
+  id: string;
+  type: string;
+  attributes: {
+    name: {
+      [key: string]: string;
+    };
+    description: {
+      [key: string]: string;
+    };
+    group: string;
+    version: number;
+  };
+  relationships: [];
+}
+
+export interface MangaAttr {
+  title: { [key: string]: string };
+  altTitles: {
+    [key: string]: string;
+  }[];
+  description: {
+    [key: string]: string;
+  };
+  isLocked: boolean;
+  links: object;
+  originalLanguage: string;
+  lastVolume: string;
+  lastChapter: string;
+  publicationDemographic: string;
+  status: string;
+  year: number;
+  contentRating: string;
+  tags: Tag[];
+  state: string;
+  chapterNumbersResetOnNewVolume: boolean;
+  createdAt: string;
+  updatedAt: string;
+  version: number;
+  availableTranslatedLanguage: [];
+  latestUploadedChapter: string;
+}
+
+export interface MangaRelationship {
+  id: string;
+  type: string;
+  attributes: Record<string, string | number>;
+}
+
+export interface ChapterAttributes {
+  title: string;
+  volume: string;
+  chapter: string;
+  translatedLanguage: string;
+  externalUrl: string;
+  publishAt: string;
+  readableAt: string;
+  createdAt: string;
+  updatedAt: string;
+  pages: number;
+  version: number;
+}
+
+export interface Chapter {
+  id: string;
+  type: string;
+  attributes: ChapterAttributes;
+  relationships: object[];
+}
+
+export const getLatestManga = async () => {
+  const queryParams = new URLSearchParams();
+  queryParams.append("includes[]", "cover_art");
+  queryParams.append("limit", "12");
+
+  const res = await fetch(baseUrl + "/manga" + "?" + queryParams.toString());
+  if (!res.ok) throw new Error("Error fetching api from mangadex");
+
+  return res.json();
+};
+
+export const getMangaById = async (id: string) => {
+  const queryParams = new URLSearchParams();
+  queryParams.append("includes[]", "cover_art");
+  queryParams.append("includes[]", "author");
+  queryParams.append("includes[]", "artist");
+
+  const res = await fetch(
+    baseUrl + "/manga/" + id + "?" + queryParams.toString()
+  );
+  if (!res.ok) throw new Error("Error fetching api from mangadex");
+
+  const body = await res.json();
+  return body as BaseResponse<"entity">;
+};
+
+export const getMangaFeed = async (id: string) => {
+  const queryParams = new URLSearchParams();
+  queryParams.append("limit", "50");
+  queryParams.append("translatedLanguage[]", "en");
+  queryParams.append("order[chapter]", "desc");
+
+  const res = await fetch(
+    baseUrl + "/manga/" + id + "/feed" + "?" + queryParams.toString()
+  );
+  if (!res.ok) throw new Error("Error fetching api from mangadex");
+  const body = await res.json();
+
+  return body;
+};
