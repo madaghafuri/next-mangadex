@@ -3,6 +3,7 @@
 import { BaseResponse, Data, getMangaFeed } from "@/app/api";
 import { useEffect, useState } from "react";
 import { Skeleton } from "./ui/skeleton";
+import Link from "next/link";
 
 export const Feed = ({ mangaId }: { mangaId: string }) => {
   const [chapters, setChapters] = useState<Data<"chapter">[]>([]);
@@ -20,12 +21,13 @@ export const Feed = ({ mangaId }: { mangaId: string }) => {
         {chapters.length > 0 ? (
           chapters.map((val) => {
             return (
-              <div
+              <Link
                 key={val.id}
+                href={`/chapter/${val.id}`}
                 className="p-2 rounded-md bg-zinc-800 text-sm font-extrabold hover:bg-zinc-700"
               >
                 Chapter {val.attributes.chapter} - {val.attributes.title}
-              </div>
+              </Link>
             );
           })
         ) : (

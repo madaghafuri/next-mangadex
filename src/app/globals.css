@@ -69,6 +69,19 @@
 @layer base {
   * {
     @apply border-border;
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+    ::-webkit-scrollbar-track {
+      @apply bg-zinc-800;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+      box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
+      @apply bg-zinc-600;
+    }
   }
   body {
     @apply bg-background text-foreground;

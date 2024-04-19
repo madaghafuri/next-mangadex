@@ -1,4 +1,4 @@
-import { BaseResponse, baseUrl, getLatestManga } from "./api";
+import { BaseResponse, baseUrl, getLatestManga } from "../api";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -35,31 +35,33 @@ export default async function Home() {
   return (
     <main className="flex min-h-screen min-w-screen flex-col p-5 relative">
       <section>
-        <h1>Popular New Titles</h1>
+        <h1 className="text-2xl">Popular New Titles</h1>
       </section>
 
-      <section className="flex flex-col items-center">
+      <section className="md:flex md:flex-col md:items-center">
         <div className="flex flex-col">
           <h1 className="text-2xl truncate">Latest Manga</h1>
-          <div className="md:grid md:grid-cols-3 md:max-w-[800px] md:bg-gray-800 md:rounded-md">
+          <div
+            className={cn(
+              "md:grid md:grid-cols-3 gap-3 md:max-w-[850px] md:bg-zinc-800 md:rounded-md",
+              "flex flex-col gap-3 max-w-full"
+            )}
+          >
             {latestManga.data.map((value) => {
               const coverArt = value.relationships.find(
                 (value) => value.type === "cover_art"
               );
 
               return (
-                <div
-                  key={value.id}
-                  className={cn("flex items-center gap-3", "md:p-3")}
-                >
+                <div key={value.id} className={cn("flex gap-3", "md:p-3")}>
                   <Image
                     src={`https://uploads.mangadex.org/covers/${value.id}/${coverArt?.attributes.fileName}`}
                     alt="Cover Image"
                     width={64}
                     height={100}
-                    className="rounded-sm"
+                    className="rounded-sm aspect-[5/7]"
                   />
-                  <div className="h-[100%] w-[180px]">
+                  <div className="h-[100%] max-w-[128px]">
                     <Link href={`title/${value.id}`}>
                       <h4 className="font-bold truncate">
                         {value.attributes.title.en}
@@ -75,7 +77,7 @@ export default async function Home() {
 
       <section>
         <h1 className="text-2xl">Staff Picks</h1>
-        <div className="flex items-center overflow-scroll gap-5 max-w-full">
+        <div className="flex items-center overflow-x-scroll gap-5 max-w-full">
           {staffPicks.data.map((val) => {
             const coverArt = val.relationships.find(
               (val) => val.type === "cover_art"

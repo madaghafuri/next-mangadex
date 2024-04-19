@@ -21,7 +21,11 @@ export interface Data<T = "manga"> {
     : T extends "chapter"
     ? ChapterAttributes
     : never;
-  relationships: T extends "manga" ? MangaRelationship[] : [];
+  relationships: T extends "manga"
+    ? MangaRelationship[]
+    : T extends "chapter"
+    ? Relationship<MangaAttr>[]
+    : never;
 }
 
 export interface Tag {
@@ -91,13 +95,30 @@ export interface Chapter {
   id: string;
   type: string;
   attributes: ChapterAttributes;
-  relationships: object[];
+  relationships: Relationship[];
+}
+
+export interface ChapterResponse {
+  result: string;
+  baseUrl: string;
+  chapter: {
+    hash: string;
+    data: string[];
+    dataSaver: string[];
+  };
+}
+
+export interface Relationship<T = ChapterAttributes> {
+  id: string;
+  type: string;
+  attributes: T;
 }
 
 export const getLatestManga = async () => {
   const queryParams = new URLSearchParams();
   queryParams.append("includes[]", "cover_art");
   queryParams.append("limit", "12");
+  queryParams.append("order[latestUploadedChapter]", "desc");
 
   const res = await fetch(baseUrl + "/manga" + "?" + queryParams.toString());
   if (!res.ok) throw new Error("Error fetching api from mangadex");
@@ -133,4 +154,25 @@ export const getMangaFeed = async (id: string) => {
   const body = await res.json();
 
   return body;
+};
+
+export const getChapterImage = async (id: string) => {
+  const res = await fetch(baseUrl + "/at-home" + "/server/" + id);
+  if (!res.ok) throw new Error("Error fetching api from mangadex");
+
+  const body = await res.json();
+  return body as ChapterResponse;
+};
+
+export const getChapterData = async (id: string) => {
+  const queryParams = new URLSearchParams();
+  queryParams.append("includes[]", "manga");
+
+  const res = await fetch(
+    baseUrl + "/chapter/" + id + "?" + queryParams.toString()
+  );
+  if (!res.ok) throw new Error("Error fetching api from mangadex");
+
+  const body = await res.json();
+  return body as BaseResponse<"entity">;
 };

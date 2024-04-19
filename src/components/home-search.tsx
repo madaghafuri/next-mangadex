@@ -6,6 +6,7 @@ import { useDebounce } from "@/lib/hooks";
 import { BaseResponse, Data, baseUrl } from "@/app/api";
 import Image from "next/image";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 export const SearchTitle = () => {
   const [open, setOpen] = useState(false);
@@ -33,10 +34,32 @@ export const SearchTitle = () => {
   };
 
   return (
-    <div className="relative">
-      <Input value={search} onChange={handleChange} placeholder="Search" />
+    <div
+      className={cn(
+        "relative transition-transform duration-300",
+        open ? "fixed p-5 left-0 right-0 m-auto bg-zinc-800" : ""
+      )}
+    >
+      <Input
+        value={search}
+        onChange={handleChange}
+        placeholder="Search"
+        type="search"
+        onFocus={() => setOpen(true)}
+        // onBlur={() => setOpen(false)}
+        onBlurCapture={() => {
+          setTimeout(() => {
+            setOpen(false);
+          }, 500);
+        }}
+      />
       {result.length > 0 ? (
-        <div className="absolute top-[53px] right-0 flex flex-col gap-2 z-50 bg-gray-700 rounded-md min-w-[300px] p-2">
+        <div
+          className={cn(
+            "absolute top-[53px] right-0 flex-col gap-2 z-50 bg-gray-700 rounded-md min-w-[300px] p-2",
+            open ? "flex mt-5" : "hidden"
+          )}
+        >
           {result.map((value) => {
             const coverArt = value.relationships.find(
               (val) => val.type === "cover_art"

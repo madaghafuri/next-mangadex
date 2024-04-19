@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./globals.css";
+import "../globals.css";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { SearchTitle } from "@/components/home-search";
@@ -23,7 +23,7 @@ export default function RootLayout({
         <main>
           <div
             className={cn(
-              "grid grid-cols-[10%,auto,10%,10%] items-center gap-3",
+              "grid grid-cols-[10%,auto,10%,10%] items-center gap-3 sticky top-0 z-50",
               "px-5 py-3",
               "bg-zinc-800"
             )}
