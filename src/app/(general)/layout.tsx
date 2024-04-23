@@ -4,6 +4,8 @@ import "../globals.css";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { SearchTitle } from "@/components/home-search";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { AlignLeft, Bookmark, Home } from "lucide-react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,11 +26,25 @@ export default function RootLayout({
           <div
             className={cn(
               "grid grid-cols-[10%,auto,10%,10%] items-center gap-3 sticky top-0 z-50",
-              "px-5 py-3",
+              "px-5 py-2",
               "bg-zinc-800"
             )}
           >
-            <h1>Hello</h1>
+            <Sheet>
+              <SheetTrigger asChild>
+                <AlignLeft />
+              </SheetTrigger>
+              <SheetContent side={"left"} className="bg-zinc-800">
+                <Link href={"/"} className="flex items-center gap-3">
+                  <Home />
+                  <h1 className="font-bold">Home</h1>
+                </Link>
+                <Link href={"/collection"} className="flex items-center gap-3">
+                  <Bookmark />
+                  <h1 className="font-bold">Collection</h1>
+                </Link>
+              </SheetContent>
+            </Sheet>
             <Link href={"/"}>
               <h1 className="cursor-pointer">Logo</h1>
             </Link>

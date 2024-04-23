@@ -114,13 +114,45 @@ export interface Relationship<T = ChapterAttributes> {
   attributes: T;
 }
 
-export const getLatestManga = async () => {
+export type QueryKeys =
+  | "limit"
+  | "offset"
+  | "title"
+  | "authorOrArtist"
+  | "authors[]"
+  | "artists[]"
+  | "year"
+  | "includedTags[]"
+  | "includedTagsMode"
+  | "excludedTags[]"
+  | "excludedTagsMode"
+  | "status[]"
+  | "originalLanguage[]"
+  | "ids[]"
+  | "includes[]"
+  | "group"
+  | "hasAvailableChapters"
+  | `order[latestUploadedChapter]`;
+
+export type QueryParams = Partial<Record<QueryKeys, string>>;
+
+export const getMangaList = async (
+  params?: QueryParams,
+  additionalParams?: URLSearchParams
+) => {
   const queryParams = new URLSearchParams();
   queryParams.append("includes[]", "cover_art");
   queryParams.append("limit", "12");
-  queryParams.append("order[latestUploadedChapter]", "desc");
+  if (!!params)
+    for (const [key, value] of Object.entries(params)) {
+      queryParams.append(key, value);
+    }
 
-  const res = await fetch(baseUrl + "/manga" + "?" + queryParams.toString());
+  const moreQuery = additionalParams?.toString() || "";
+
+  const res = await fetch(
+    baseUrl + "/manga" + "?" + queryParams.toString() + "&" + moreQuery
+  );
   if (!res.ok) throw new Error("Error fetching api from mangadex");
 
   return res.json();

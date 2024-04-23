@@ -1,12 +1,18 @@
 "use client";
 
 import { ChapterResponse, MangaAttr } from "@/app/api";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 import { KeyboardEvent, MouseEvent, useEffect, useState } from "react";
 import { Sheet, SheetContent } from "./ui/sheet";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, Home } from "lucide-react";
 import Link from "next/link";
+import { useLocalStorage } from "@/lib/hooks";
 
 export const PageViewer = ({
   chapter,
@@ -18,6 +24,7 @@ export const PageViewer = ({
   const params = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+  const ini = useParams<{ chapterId: string }>();
   const [page, setPage] = useState(parseInt(params.get("page") || "1"));
   const [openHeader, setOpenHeader] = useState(false);
   const [showHeader, setShowHeader] = useState(false);
@@ -27,7 +34,7 @@ export const PageViewer = ({
     setPage(page - 1);
     const newParams = new URLSearchParams(params.toString());
     newParams.set("page", (page - 1).toString());
-    router.push(pathname + "?" + newParams.toString());
+    router.replace(pathname + "?" + newParams.toString());
   };
 
   const handleNextPage = () => {
@@ -35,7 +42,7 @@ export const PageViewer = ({
     setPage(page + 1);
     const newParams = new URLSearchParams(params.toString());
     newParams.set("page", (page + 1).toString());
-    router.push(pathname + "?" + newParams.toString());
+    router.replace(pathname + "?" + newParams.toString());
   };
 
   useEffect(() => {

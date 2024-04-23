@@ -3,6 +3,8 @@ import { Feed } from "@/components/manga-feed";
 import { Badge } from "@/components/badge";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { Bookmark } from "lucide-react";
+import { BookmarkButton } from "@/components/button-bookmark";
 
 export default async function Page({ params }: { params: { id: string } }) {
   const manga = await getMangaById(params.id);
@@ -32,6 +34,11 @@ export default async function Page({ params }: { params: { id: string } }) {
           </h1>
           <h3>{altTitle?.en}</h3>
         </div>
+      </section>
+
+      <section className="grid grid-cols-[20%,auto] gap-3 pt-5">
+        <BookmarkButton mangaId={params.id} />
+        <button className="bg-zinc-800 rounded text-xl py-2">Read</button>
       </section>
 
       <section className="pt-12 flex flex-col gap-3">

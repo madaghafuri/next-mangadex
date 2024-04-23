@@ -1,7 +1,8 @@
-import { BaseResponse, baseUrl, getLatestManga } from "../api";
+import { BaseResponse, baseUrl, getMangaList } from "../api";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { ChevronRight } from "lucide-react";
 
 const idList = [
   "fa431951-bce5-48cb-b75b-5b13fe9432a3",
@@ -28,7 +29,10 @@ const getStaffPicks = async () => {
 };
 
 export default async function Home() {
-  const latestManga = (await getLatestManga()) as BaseResponse;
+  const latestManga = (await getMangaList({
+    "order[latestUploadedChapter]": "desc",
+    limit: "12",
+  })) as BaseResponse;
 
   const staffPicks = await getStaffPicks();
 
@@ -40,7 +44,12 @@ export default async function Home() {
 
       <section className="md:flex md:flex-col md:items-center">
         <div className="flex flex-col">
-          <h1 className="text-2xl truncate">Latest Manga</h1>
+          <div className="flex justify-between items-center">
+            <h1 className="text-2xl truncate">Latest Manga</h1>
+            <Link href={`/latest`}>
+              <ChevronRight />
+            </Link>
+          </div>
           <div
             className={cn(
               "md:grid md:grid-cols-3 gap-3 md:max-w-[850px] md:bg-zinc-800 md:rounded-md",
@@ -61,7 +70,7 @@ export default async function Home() {
                     height={100}
                     className="rounded-sm aspect-[5/7]"
                   />
-                  <div className="h-[100%] max-w-[128px]">
+                  <div className="h-[100%] md:max-w-[128px] max-w-80">
                     <Link href={`title/${value.id}`}>
                       <h4 className="font-bold truncate">
                         {value.attributes.title.en}

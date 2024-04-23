@@ -34,3 +34,25 @@ export const useMediaQuery = ({ query }: { query: string }) => {
 
   return matches;
 };
+
+export const useLocalStorage = <T>(key: string, value: T) => {
+  const [val, setVal] = useState(value);
+
+  useEffect(() => {
+    try {
+      const item = localStorage.getItem(key);
+      if (item) {
+        setVal(JSON.parse(item));
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }, []);
+
+  const setValue = (value: T) => {
+    setVal(value);
+    localStorage.setItem(key, JSON.stringify(value));
+  };
+
+  return [val, setValue] as const;
+};
