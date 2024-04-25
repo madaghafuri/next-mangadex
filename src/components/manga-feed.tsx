@@ -27,6 +27,7 @@ export const Feed = ({ mangaId }: { mangaId: string }) => {
           chapters.map((val) => {
             const handleAppendHistory = () => {
               setHistory([...history, val.id]);
+              console.log("clicked");
             };
 
             return (

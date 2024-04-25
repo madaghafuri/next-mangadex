@@ -3,6 +3,7 @@
 import { BaseResponse, Data, getMangaList } from "@/app/api";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -21,12 +22,7 @@ export const LatestManga = () => {
         limit: "32",
         offset: offset.toString(),
       })) as BaseResponse;
-      console.log(res.data);
 
-      const chapters = res.data.map(
-        (val) => val.attributes.latestUploadedChapter
-      );
-      console.log(chapters);
       setMangaList(res.data);
     })();
   }, [offset]);
@@ -54,6 +50,9 @@ export const LatestManga = () => {
             (val) => val.type === "cover_art"
           );
 
+          const tes = val.attributes.title.en === "Lying Gyaru" ? val : null;
+          console.log(tes?.relationships);
+
           return (
             <div key={val.id} className="bg-zinc-800 p-3 rounded flex gap-3">
               <Image
@@ -61,10 +60,11 @@ export const LatestManga = () => {
                 alt="Cover Images"
                 width={64}
                 height={128}
-                style={{ width: "auto", height: "auto" }}
                 className="aspect-[5/7] object-cover rounded"
               />
-              <h2 className="text-sm font-bold">{val.attributes.title.en}</h2>
+              <Link href={`/title/${val.id}`}>
+                <h2 className="text-sm font-bold">{val.attributes.title.en}</h2>
+              </Link>
             </div>
           );
         })}

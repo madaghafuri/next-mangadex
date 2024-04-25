@@ -136,6 +136,16 @@ export type QueryKeys =
 
 export type QueryParams = Partial<Record<QueryKeys, string>>;
 
+export interface CoverAttr {
+  createdAt: string;
+  description: string;
+  fileName: string;
+  locale: string;
+  updatedAt: string;
+  version: number;
+  volume: string;
+}
+
 export const getMangaList = async (
   params?: QueryParams,
   additionalParams?: URLSearchParams
@@ -207,4 +217,29 @@ export const getChapterData = async (id: string) => {
 
   const body = await res.json();
   return body as BaseResponse<"entity">;
+};
+
+export const getChapterList = async (params?: URLSearchParams) => {
+  const queryParams = new URLSearchParams(params?.toString());
+  queryParams.append("limit", "15");
+  queryParams.append("order[readableAt]", "desc");
+  queryParams.append("order[chapter]", "desc");
+  queryParams.append("includes[]", "manga");
+
+  const res = await fetch(baseUrl + "/chapter" + "?" + queryParams.toString());
+  if (!res.ok) throw new Error("Error fetching api from mangadex");
+
+  const body = await res.json();
+  return body as BaseResponse<"collection">;
+};
+
+export const getCoverList = async (params?: URLSearchParams) => {
+  const queryParams = new URLSearchParams(params?.toString());
+  queryParams.append("limit", "15");
+
+  const res = await fetch(baseUrl + "/cover" + "?" + queryParams.toString());
+  if (!res.ok) throw new Error("Error fetching api from mangadex");
+
+  const body = await res.json();
+  return body as BaseResponse<"collection">;
 };

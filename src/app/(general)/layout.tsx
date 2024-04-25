@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { SearchTitle } from "@/components/home-search";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { AlignLeft, Bookmark, Home } from "lucide-react";
+import { AlignLeft, Bookmark, History, Home } from "lucide-react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -42,6 +42,10 @@ export default function RootLayout({
                 <Link href={"/collection"} className="flex items-center gap-3">
                   <Bookmark />
                   <h1 className="font-bold">Collection</h1>
+                </Link>
+                <Link href={"/history"} className="flex items-center gap-3">
+                  <History />
+                  <h1 className="font-bold">History</h1>
                 </Link>
               </SheetContent>
             </Sheet>
