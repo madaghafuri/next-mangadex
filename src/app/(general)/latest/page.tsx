@@ -1,5 +1,6 @@
 import { LatestManga } from "@/components/latest-manga";
 import { ArrowLeft } from "lucide-react";
+import { Suspense } from "react";
 
 export default function Page() {
   return (
@@ -10,7 +11,9 @@ export default function Page() {
       </section>
 
       <section>
-        <LatestManga />
+        <Suspense>
+          <LatestManga />
+        </Suspense>
       </section>
     </main>
   );
