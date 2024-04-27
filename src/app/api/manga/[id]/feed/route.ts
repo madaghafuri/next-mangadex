@@ -1,5 +1,5 @@
 import { baseUrl } from "@/app/api";
-import { NextRequest } from "next/server";
+import { NextRequest, userAgent } from "next/server";
 
 export const runtime = "edge";
 
@@ -10,9 +10,15 @@ export async function GET(
   const queryParams = new URLSearchParams(
     request.nextUrl.searchParams.toString()
   );
+  queryParams.delete("id");
 
   const res = await fetch(
-    baseUrl + "/manga/" + params.id + "/feed" + "?" + queryParams.toString()
+    baseUrl + "/manga/" + params.id + "/feed" + "?" + queryParams.toString(),
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
   );
   if (!res.ok) throw new Error("error fetching from mangadex");
   const body = await res.json();

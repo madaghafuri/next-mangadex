@@ -20,9 +20,13 @@ export const Feed = ({ mangaId }: { mangaId: string }) => {
 
       setLoading(true);
       const res = await fetch(
-        "/api/manga/" + mangaId + "/feed" + "?" + queryParams.toString()
+        "/api/manga/" + mangaId + "/feed" + "?" + queryParams.toString(),
+        {
+          method: "GET",
+        }
       );
       const body = await res.json();
+      console.log(body);
       setChapters(body.data.data);
       setLoading(false);
     })();
