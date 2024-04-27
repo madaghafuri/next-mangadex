@@ -3,7 +3,6 @@ import { Feed } from "@/components/manga-feed";
 import { Badge } from "@/components/badge";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import { Bookmark } from "lucide-react";
 import { BookmarkButton } from "@/components/button-bookmark";
 
 export default async function Page({ params }: { params: { id: string } }) {

@@ -12,7 +12,7 @@ import { Sheet, SheetContent } from "./ui/sheet";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, Home } from "lucide-react";
 import Link from "next/link";
-import { useLocalStorage } from "@/lib/hooks";
+import { SideNav } from "./side-nav";
 
 export const PageViewer = ({
   chapter,
@@ -24,7 +24,6 @@ export const PageViewer = ({
   const params = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const ini = useParams<{ chapterId: string }>();
   const [page, setPage] = useState(parseInt(params.get("page") || "1"));
   const [openHeader, setOpenHeader] = useState(false);
   const [showHeader, setShowHeader] = useState(false);
@@ -92,32 +91,41 @@ export const PageViewer = ({
     >
       {showHeader ? (
         <section
-          className={cn("fixed top-0 left-0 right-0 m-auto p-7", "flex")}
+          className={cn("fixed top-0 left-0 right-0 m-auto p-7 z-50", "flex")}
         >
-          <h1 className="grow">{manga.title.en}</h1>
+          <h1 className="max-w-[90%] truncate">{manga.title.en}</h1>
           <ChevronLeft
             className="w-[10%]"
             onClick={() => setOpenHeader(!openHeader)}
           />
         </section>
       ) : null}
-      <img
-        src={`${chapter.baseUrl}/data-saver/${chapter.chapter.hash}/${
-          chapter.chapter.dataSaver[page - 1]
-        }`}
-        alt="Page Content"
-        width={512}
-        height={0}
-        sizes="(min-width: 768px) 100vh,"
-        className="absolute top-0 bottom-0 right-0 left-0 m-auto"
-        onClick={handleClick}
-      />
+      <div className="flex flex-row-reverse overflow-x-hidden absolute top-0 left-0 right-0 bottom-0 m-auto">
+        {chapter.chapter.dataSaver.map((val, index) => {
+          const thisPage = val.split("-")[0];
+          const chapHash = val.split("-")[1];
+
+          const trimmedPage = thisPage.replace(/[a-zA-Z]/gi, "");
+
+          return (
+            <img
+              key={`${chapHash}-${thisPage}`}
+              src={`${chapter.baseUrl}/data-saver/${chapter.chapter.hash}/${val}`}
+              alt="Chapter Page"
+              width={512}
+              height={0}
+              className={cn(
+                "object-contain",
+                page.toString() === trimmedPage ? "block" : "hidden"
+              )}
+              onClick={handleClick}
+            />
+          );
+        })}
+      </div>
       <Sheet open={openHeader} onOpenChange={setOpenHeader}>
         <SheetContent className="bg-zinc-800">
-          <Link href={`/`} className="flex gap-3 items-center">
-            <Home />
-            <h1 className="font-bold">Home</h1>
-          </Link>
+          <SideNav />
         </SheetContent>
       </Sheet>
     </div>

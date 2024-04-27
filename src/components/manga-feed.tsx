@@ -9,7 +9,7 @@ import { useLocalStorage } from "@/lib/hooks";
 export const Feed = ({ mangaId }: { mangaId: string }) => {
   const [chapters, setChapters] = useState<Data<"chapter">[]>([]);
   const [loading, setLoading] = useState(false);
-  const [history, setHistory] = useLocalStorage<string[]>("history", []);
+  const [history, setHistory] = useLocalStorage<string[][]>("history", []);
 
   useEffect(() => {
     (async () => {
@@ -26,9 +26,14 @@ export const Feed = ({ mangaId }: { mangaId: string }) => {
         {chapters.length > 0 ? (
           chapters.map((val) => {
             const handleAppendHistory = () => {
-              setHistory([...history, val.id]);
-              console.log("clicked");
+              const historyToBe = [...history];
+              const idx = historyToBe.findIndex(([id]) => id === val.id);
+              idx !== -1 && historyToBe.splice(idx, 1);
+              historyToBe.unshift([val.id, new Date().toISOString()]);
+              setHistory(historyToBe);
             };
+
+            console.log(val);
 
             return (
               <Link

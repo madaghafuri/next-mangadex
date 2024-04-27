@@ -1,7 +1,7 @@
 "use client";
 
 import { BaseResponse, Data, getMangaList } from "@/app/api";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, LoaderCircle } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -14,16 +14,20 @@ export const LatestManga = () => {
   const [page, setPage] = useState(parseInt(params.get("page") || "1"));
   const offset = 32 * (page - 1);
   const [mangaList, setMangaList] = useState<Data<"manga">[]>([]);
+  const [loading, setLoading] = useState<"idle" | "loading" | "loaded">("idle");
 
   useEffect(() => {
     (async () => {
+      setLoading("loading");
       const res = (await getMangaList({
         "order[latestUploadedChapter]": "desc",
         limit: "32",
         offset: offset.toString(),
       })) as BaseResponse;
-
-      setMangaList(res.data);
+      if (res.result === "ok") {
+        setMangaList(res.data);
+        setLoading("loaded");
+      }
     })();
   }, [offset]);
 
@@ -45,23 +49,25 @@ export const LatestManga = () => {
   return (
     <div>
       <div className="flex flex-col gap-3">
+        {loading === "loading" && (
+          <LoaderCircle className="animate-spin size-14 self-center" />
+        )}
         {mangaList.map((val) => {
           const cover = val.relationships.find(
             (val) => val.type === "cover_art"
           );
 
-          const tes = val.attributes.title.en === "Lying Gyaru" ? val : null;
-          console.log(tes?.relationships);
-
           return (
             <div key={val.id} className="bg-zinc-800 p-3 rounded flex gap-3">
-              <Image
-                src={`https://uploads.mangadex.org/covers/${val.id}/${cover?.attributes.fileName}`}
-                alt="Cover Images"
-                width={64}
-                height={128}
-                className="aspect-[5/7] object-cover rounded"
-              />
+              <Link href={`/title/${val.id}`}>
+                <Image
+                  src={`https://uploads.mangadex.org/covers/${val.id}/${cover?.attributes.fileName}`}
+                  alt="Cover Images"
+                  width={70}
+                  height={98}
+                  className="aspect-[5/7] rounded max-w-[70px] h-auto object-cover object-center"
+                />
+              </Link>
               <Link href={`/title/${val.id}`}>
                 <h2 className="text-sm font-bold">{val.attributes.title.en}</h2>
               </Link>

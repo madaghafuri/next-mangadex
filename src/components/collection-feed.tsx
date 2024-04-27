@@ -1,6 +1,7 @@
 "use client";
 import { BaseResponse, Data, getMangaList } from "@/app/api";
 import { useLocalStorage } from "@/lib/hooks";
+import { LoaderCircle } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -49,7 +50,7 @@ export const CollectionFeed = () => {
           );
         })
       ) : (
-        <h1>No Collection Added</h1>
+        <LoaderCircle className="animate-spin" />
       )}
     </div>
   );

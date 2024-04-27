@@ -16,8 +16,6 @@ export const BookmarkButton = ({
     []
   );
 
-  console.log(collection);
-
   const handleAddToColl = () => {
     if (collection.includes(mangaId)) return;
     setCollection([...collection, mangaId]);

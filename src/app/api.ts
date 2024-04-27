@@ -150,7 +150,7 @@ export const getMangaList = async (
   params?: QueryParams,
   additionalParams?: URLSearchParams
 ) => {
-  const queryParams = new URLSearchParams();
+  const queryParams = new URLSearchParams(additionalParams?.toString());
   queryParams.append("includes[]", "cover_art");
   queryParams.append("limit", "12");
   if (!!params)
@@ -158,11 +158,7 @@ export const getMangaList = async (
       queryParams.append(key, value);
     }
 
-  const moreQuery = additionalParams?.toString() || "";
-
-  const res = await fetch(
-    baseUrl + "/manga" + "?" + queryParams.toString() + "&" + moreQuery
-  );
+  const res = await fetch(baseUrl + "/manga" + "?" + queryParams.toString());
   if (!res.ok) throw new Error("Error fetching api from mangadex");
 
   return res.json();
@@ -223,7 +219,6 @@ export const getChapterList = async (params?: URLSearchParams) => {
   const queryParams = new URLSearchParams(params?.toString());
   queryParams.append("limit", "15");
   queryParams.append("order[readableAt]", "desc");
-  queryParams.append("order[chapter]", "desc");
   queryParams.append("includes[]", "manga");
 
   const res = await fetch(baseUrl + "/chapter" + "?" + queryParams.toString());
