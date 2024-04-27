@@ -5,6 +5,8 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { BookmarkButton } from "@/components/button-bookmark";
 
+export const runtime = "edge";
+
 export default async function Page({ params }: { params: { id: string } }) {
   const manga = await getMangaById(params.id);
   const cover_art = manga.data.relationships.find(

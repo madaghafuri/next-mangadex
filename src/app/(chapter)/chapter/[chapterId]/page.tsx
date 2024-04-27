@@ -1,6 +1,8 @@
 import { Data, MangaAttr, getChapterData, getChapterImage } from "@/app/api";
 import { PageViewer } from "@/components/page-viewer";
 
+export const runtime = "edge";
+
 export default async function Page({
   params,
 }: {
