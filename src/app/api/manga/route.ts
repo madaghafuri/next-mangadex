@@ -1,6 +1,8 @@
 import { baseUrl } from "@/app/api";
 import { NextRequest } from "next/server";
 
+export const runtime = "edge";
+
 export async function GET(request: NextRequest) {
   const queryParams = new URLSearchParams(
     request.nextUrl.searchParams.toString()
