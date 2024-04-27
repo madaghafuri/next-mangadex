@@ -160,8 +160,9 @@ export const getMangaList = async (
 
   const res = await fetch(baseUrl + "/manga" + "?" + queryParams.toString());
   if (!res.ok) throw new Error("Error fetching api from mangadex");
+  const body = await res.json();
 
-  return res.json();
+  return body as BaseResponse<"collection">;
 };
 
 export const getMangaById = async (id: string) => {

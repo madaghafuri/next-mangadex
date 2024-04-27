@@ -29,10 +29,12 @@ const getStaffPicks = async () => {
 };
 
 export default async function Home() {
-  const latestManga = (await getMangaList({
+  const latestManga = await getMangaList({
     "order[latestUploadedChapter]": "desc",
     limit: "12",
-  })) as BaseResponse;
+  });
+
+  console.log(latestManga);
 
   const staffPicks = await getStaffPicks();
 

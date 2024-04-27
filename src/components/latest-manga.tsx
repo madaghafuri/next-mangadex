@@ -18,16 +18,16 @@ export const LatestManga = () => {
 
   useEffect(() => {
     (async () => {
+      const params = new URLSearchParams();
+      params.append("limit", "32");
+      params.append("order[latestUploadedChapter]", "desc");
+      params.append("offset", offset.toString());
       setLoading("loading");
-      const res = (await getMangaList({
-        "order[latestUploadedChapter]": "desc",
-        limit: "32",
-        offset: offset.toString(),
-      })) as BaseResponse;
-      if (res.result === "ok") {
-        setMangaList(res.data);
-        setLoading("loaded");
-      }
+      const res = await fetch("/api/manga" + "?" + params.toString());
+      const body = await res.json();
+      console.log(body.data);
+      setMangaList(body.data.data);
+      setLoading("loaded");
     })();
   }, [offset]);
 

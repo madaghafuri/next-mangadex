@@ -13,9 +13,17 @@ export const Feed = ({ mangaId }: { mangaId: string }) => {
 
   useEffect(() => {
     (async () => {
+      const queryParams = new URLSearchParams();
+      queryParams.append("limit", "50");
+      queryParams.append("translatedLanguage[]", "en");
+      queryParams.append("order[chapter]", "desc");
+
       setLoading(true);
-      const feed = (await getMangaFeed(mangaId)) as BaseResponse;
-      setChapters(feed.data as unknown as Data<"chapter">[]);
+      const res = await fetch(
+        "/api/manga/" + mangaId + "/feed" + "?" + queryParams.toString()
+      );
+      const body = await res.json();
+      setChapters(body.data.data);
       setLoading(false);
     })();
   }, []);
@@ -32,8 +40,6 @@ export const Feed = ({ mangaId }: { mangaId: string }) => {
               historyToBe.unshift([val.id, new Date().toISOString()]);
               setHistory(historyToBe);
             };
-
-            console.log(val);
 
             return (
               <Link
