@@ -11,7 +11,6 @@ import { KeyboardEvent, MouseEvent, useEffect, useState } from "react";
 import { Sheet, SheetContent } from "./ui/sheet";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, Home } from "lucide-react";
-import Link from "next/link";
 import { SideNav } from "./side-nav";
 
 export const PageViewer = ({

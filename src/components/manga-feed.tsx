@@ -5,11 +5,31 @@ import { useEffect, useState } from "react";
 import { Skeleton } from "./ui/skeleton";
 import Link from "next/link";
 import { useLocalStorage } from "@/lib/hooks";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export const Feed = ({ mangaId }: { mangaId: string }) => {
   const [chapters, setChapters] = useState<Data<"chapter">[]>([]);
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useLocalStorage<string[][]>("history", []);
+  const searchParams = useSearchParams();
+  const [page, setPage] = useState(parseInt(searchParams.get("page") || "1"));
+  const offset = 50 * (page - 1);
+  const router = useRouter();
+
+  const handlePrevPage = () => {
+    setPage(page - 1);
+    const newParams = new URLSearchParams(searchParams.toString());
+    newParams.set("page", (page - 1).toString());
+    router.push("?" + newParams.toString());
+  };
+
+  const handleNextPage = () => {
+    setPage(page + 1);
+    const newParams = new URLSearchParams(searchParams.toString());
+    newParams.set("page", (page + 1).toString());
+    router.push("?" + newParams.toString());
+  };
 
   useEffect(() => {
     (async () => {
@@ -17,6 +37,7 @@ export const Feed = ({ mangaId }: { mangaId: string }) => {
       queryParams.append("limit", "50");
       queryParams.append("translatedLanguage[]", "en");
       queryParams.append("order[chapter]", "desc");
+      queryParams.append("offset", offset.toString());
 
       setLoading(true);
       const res = await fetch(
@@ -26,11 +47,10 @@ export const Feed = ({ mangaId }: { mangaId: string }) => {
         }
       );
       const body = await res.json();
-      console.log(body);
       setChapters(body.data.data);
       setLoading(false);
     })();
-  }, []);
+  }, [offset]);
 
   return (
     <div>
@@ -61,6 +81,15 @@ export const Feed = ({ mangaId }: { mangaId: string }) => {
         ) : (
           <h1 className="text-xl font-bold">No Chapter Available</h1>
         )}
+      </div>
+      <div className="flex justify-center items-center gap-3 px-3 py-5">
+        <button onClick={handlePrevPage} disabled={page === 1}>
+          <ArrowLeft />
+        </button>
+        {page}
+        <button onClick={handleNextPage}>
+          <ArrowRight />
+        </button>
       </div>
     </div>
   );

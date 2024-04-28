@@ -34,8 +34,6 @@ export default async function Home() {
     limit: "12",
   });
 
-  console.log(latestManga);
-
   const staffPicks = await getStaffPicks();
 
   return (

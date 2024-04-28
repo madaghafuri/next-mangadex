@@ -10,8 +10,6 @@ export const CollectionFeed = () => {
   const [collection, setCollection] = useLocalStorage("collection", []);
   const [mangaList, setMangaList] = useState<Data<"manga">[]>([]);
 
-  console.log(collection);
-
   useEffect(() => {
     (async () => {
       if (collection.length === 0) return;

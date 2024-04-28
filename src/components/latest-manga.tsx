@@ -25,7 +25,6 @@ export const LatestManga = () => {
       setLoading("loading");
       const res = await fetch("/api/manga" + "?" + params.toString());
       const body = await res.json();
-      console.log(body.data);
       setMangaList(body.data.data);
       setLoading("loaded");
     })();
