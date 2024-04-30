@@ -25,61 +25,64 @@ export const HistoryFeed = () => {
     (async () => {
       if (history.length === 0) return;
       const queryParams = new URLSearchParams();
-      for (const val of history) {
-        queryParams.append("ids[]", val[0]);
+      queryParams.append("includes[]", "manga");
+      for (const chapId of history) {
+        queryParams.append("ids[]", chapId[0]);
       }
       setLoading(true);
-      const response = await getChapterList(queryParams);
-      const mangaIds = response.data.map((val) => {
-        const manga = val.relationships.find((val) => val.type === "manga");
-        if (!manga) return;
-        return manga.id;
-      });
+      const chapResponse = await fetch(
+        "/api/chapter" + "?" + queryParams.toString()
+      );
+      const chapResp = await chapResponse.json();
+      const chapData = chapResp.data as BaseResponse;
+      // @ts-ignore
+      const mangaIds = (chapData.data as unknown as Data<"chapter">[]).map(
+        (val) => {
+          const manga = val.relationships.find((val) => val.type === "manga");
+          if (!manga) return;
+          return manga.id;
+        }
+      );
 
       const coverQueryParams = new URLSearchParams();
-      for (const id of mangaIds) {
-        coverQueryParams.append("ids[]", id as string);
+      for (const mangaId of mangaIds) {
+        coverQueryParams.append("ids[]", mangaId as string);
       }
-      const coverResponse = (await getMangaList(
-        {},
-        coverQueryParams
-      )) as BaseResponse;
-      // const data = response.data.map((val, index) => {
-      //   const mangaToMatch = val.relationships.find(
-      //     (val) => val.type === "manga"
-      //   );
-      //   const cover = coverResponse.data.find(
-      //     (val) => val.id === mangaToMatch?.id
-      //   );
-      //   const coverImage = cover?.relationships.find(
-      //     (val) => val.type === "cover_art"
-      //   );
-      //   return {
-      //     ...val,
-      //     cover: coverImage?.attributes.fileName,
-      //   };
-      // });
-      const data = history.map((val, index) => {
-        const [chapterId, time] = val;
+      const coverResponse = await fetch(
+        "/api/manga" + "?" + coverQueryParams.toString()
+      );
+      const mangaResp = (await coverResponse.json()) as BaseResponse;
+      const mangaData = mangaResp.data;
 
-        const chapData = response.data.find((val) => val.id === chapterId);
-        const mangaId = chapData?.relationships.find(
+      const joinedData = history.map((val) => {
+        const [chapterId, time] = val;
+        // @ts-ignore
+        const chapters = chapData.data.find((val) => val.id === chapterId);
+
+        // @ts-ignore
+        const _mangaId = chapters?.relationships.find(
+          // @ts-ignore
           (val) => val.type === "manga"
         );
-        const mangaTo = coverResponse.data.find(
-          (val) => val.id === mangaId?.id
+        // @ts-ignore
+        const mangaTo = mangaData.data.find(
+          // @ts-ignore
+          (val) => val.id === _mangaId?.id
         );
+
         const coverImage = mangaTo?.relationships.find(
+          // @ts-ignore
           (val) => val.type === "cover_art"
         );
 
         return {
-          ...chapData,
+          ...chapters,
           cover: coverImage?.attributes.fileName,
           readAt: time,
         };
       });
-      setChapterList(data as unknown as Data<"chapter">[]);
+
+      setChapterList(joinedData as unknown as Data<"chapter">[]);
       setLoading(false);
     })();
   }, [history]);
@@ -106,7 +109,7 @@ export const HistoryFeed = () => {
                     alt="Cover image"
                     width={64}
                     height={128}
-                    className="aspect-[5/7] rounded"
+                    className="aspect-[5/7] rounded w-auto h-auto"
                   />
                   <div>
                     <Link href={`/chapter/${val.id}`}>
