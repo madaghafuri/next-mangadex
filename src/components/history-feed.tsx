@@ -109,7 +109,7 @@ export const HistoryFeed = () => {
                     alt="Cover image"
                     width={64}
                     height={128}
-                    className="aspect-[5/7] rounded w-auto h-auto"
+                    className="aspect-[5/7] rounded"
                   />
                   <div>
                     <Link href={`/chapter/${val.id}`}>

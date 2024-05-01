@@ -3,6 +3,13 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { ChevronRight } from "lucide-react";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 const idList = [
   "fa431951-bce5-48cb-b75b-5b13fe9432a3",
@@ -28,6 +35,20 @@ const getStaffPicks = async () => {
   return body as BaseResponse;
 };
 
+const getPopularTitles = async () => {
+  const queryParams = new URLSearchParams();
+  queryParams.append("limit", "10");
+  queryParams.append("includes[]", "cover_art");
+  const currentDate = new Date();
+  currentDate.setDate(currentDate.getDate() - 7);
+  queryParams.append("createdAtSince", currentDate.toISOString().split(".")[0]);
+
+  const resp = await fetch(baseUrl + "/manga" + "?" + queryParams.toString());
+  const body = await resp.json();
+
+  return body as BaseResponse;
+};
+
 export default async function Home() {
   const latestManga = await getMangaList({
     "order[latestUploadedChapter]": "desc",
@@ -35,14 +56,65 @@ export default async function Home() {
   });
 
   const staffPicks = await getStaffPicks();
+  const popularTitles = await getPopularTitles();
+  console.log(popularTitles);
 
   return (
-    <main className="flex min-h-screen min-w-screen flex-col p-5 relative">
-      <section>
-        <h1 className="text-2xl">Popular New Titles</h1>
+    <main className="flex min-h-screen min-w-screen flex-col">
+      <section className="relative">
+        <Carousel>
+          <CarouselContent>
+            {popularTitles.data.map((val) => {
+              const cover = val.relationships.find(
+                (val) => val.type === "cover_art"
+              );
+              const imageUrl =
+                "https://uploads.mangadex.org/covers/" +
+                val.id +
+                "/" +
+                cover?.attributes.fileName;
+              return (
+                <CarouselItem
+                  key={val.id}
+                  className="relative h-[300px] md:[400px]"
+                >
+                  <Image
+                    src={imageUrl}
+                    className="w-full object-cover"
+                    width={128}
+                    height={512}
+                    alt="manga cover"
+                  />
+                  <div
+                    style={{
+                      background:
+                        "linear-gradient(to bottom, rgba(25, 26, 28, 0.6), rgba(25, 26, 28, 1))",
+                    }}
+                    className="absolute inset-0"
+                  />
+                  <div className="absolute inset-0 left-8 flex items-center gap-3">
+                    <Image
+                      src={imageUrl}
+                      width={128}
+                      height={256}
+                      alt="manga cover"
+                      className="aspect-[5/7] rounded"
+                    />
+                    <div>
+                      <h2 className="text-xl font-bold">
+                        {val.attributes.title.en}
+                      </h2>
+                    </div>
+                  </div>
+                </CarouselItem>
+              );
+            })}
+          </CarouselContent>
+        </Carousel>
+        <h1 className="text-2xl absolute top-3 left-3">Popular New Titles</h1>
       </section>
 
-      <section className="md:flex md:flex-col md:items-center">
+      <section className="md:flex md:flex-col md:items-center p-5">
         <div className="flex flex-col">
           <div className="flex justify-between items-center">
             <h1 className="text-2xl truncate">Latest Manga</h1>
@@ -84,7 +156,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <section>
+      <section className="p-5">
         <h1 className="text-2xl">Staff Picks</h1>
         <div className="flex items-center overflow-x-scroll gap-5 max-w-full">
           {staffPicks.data.map((val) => {
