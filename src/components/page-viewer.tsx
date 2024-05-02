@@ -106,10 +106,16 @@ export const PageViewer = ({
 
           const trimmedPage = thisPage.replace(/[a-zA-Z]/gi, "");
 
+          const params = new URLSearchParams();
+          params.append("hash", chapter.chapter.hash);
+          params.append("url", chapter.baseUrl);
+          params.append("fileName", val);
+          const url = "/api/chapter" + "?" + params.toString();
+
           return (
             <img
               key={`${chapHash}-${thisPage}`}
-              src={`${chapter.baseUrl}/data-saver/${chapter.chapter.hash}/${val}`}
+              src={url}
               alt="Chapter Page"
               width={512}
               height={0}
