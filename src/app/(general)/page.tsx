@@ -57,7 +57,6 @@ export default async function Home() {
 
   const staffPicks = await getStaffPicks();
   const popularTitles = await getPopularTitles();
-  console.log(popularTitles);
 
   return (
     <main className="flex min-h-screen min-w-screen flex-col">
@@ -88,7 +87,7 @@ export default async function Home() {
                   <div
                     style={{
                       background:
-                        "linear-gradient(to bottom, rgba(25, 26, 28, 0.6), rgba(25, 26, 28, 1))",
+                        "linear-gradient(to bottom, hsla(0, 0%, 7%, 0.6), hsla(0, 0%, 7%, 1))",
                     }}
                     className="absolute inset-0"
                   />
