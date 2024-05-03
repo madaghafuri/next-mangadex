@@ -1,37 +1,54 @@
 "use client";
 
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { Input } from "./ui/input";
 import { useDebounce } from "@/lib/hooks";
 import { BaseResponse, Data, baseUrl } from "@/app/api";
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
+import { LoaderCircle, Search } from "lucide-react";
 
 export const SearchTitle = () => {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [result, setResult] = useState<Data[]>([]);
   const val = useDebounce(search);
-  const queryParams = new URLSearchParams();
-  queryParams.append("title", val);
-  queryParams.append("includes[]", "cover_art");
-  queryParams.append("limit", "5");
+  const searchRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    if (!val) return;
-    (async () => {
-      const res = await fetch(
-        baseUrl + "/manga" + "?" + queryParams.toString()
-      );
-      const body = (await res.json()) as BaseResponse;
-      setResult(body.data);
-    })();
-  }, [val]);
+  const {
+    data: searchResult,
+    isFetching: isLoading,
+    isFetched,
+    refetch,
+  } = useQuery({
+    queryKey: ["search"],
+    queryFn: async () => {
+      const queryParams = new URLSearchParams();
+      queryParams.append("title", val);
+      queryParams.append("includes[]", "cover_art");
+      queryParams.append("limit", "5");
+
+      const res = await fetch("/api/manga" + "?" + queryParams.toString());
+      if (!res.ok) throw new Error("error fetching from mangadex");
+      const body = await res.json();
+      return body.data as BaseResponse;
+    },
+    enabled: val.length > 0,
+  });
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSearch(event.target.value);
   };
+
+  useEffect(() => {
+    if (val.length > 0) refetch();
+  }, [val]);
+
+  useEffect(() => {
+    if (searchRef.current !== null && open) searchRef.current.focus();
+  }, [open]);
 
   return (
     <div
@@ -41,32 +58,48 @@ export const SearchTitle = () => {
       )}
     >
       <Input
+        ref={searchRef}
         value={search}
         onChange={handleChange}
         placeholder="Search"
         type="search"
-        onFocus={() => setOpen(true)}
-        // onBlur={() => setOpen(false)}
+        onBlur={() => setOpen(false)}
         onBlurCapture={() => {
           setTimeout(() => {
             setOpen(false);
           }, 500);
         }}
+        className={cn(open ? "block" : "hidden")}
       />
-      {result.length > 0 ? (
+      <div
+        className={cn(
+          "p-2 rounded bg-background items-center justify-center",
+          open ? "hidden" : "flex"
+        )}
+      >
+        <Search
+          onClick={() => {
+            setOpen(true);
+          }}
+          className="opacity-50"
+        />
+      </div>
+      {isLoading ? (
+        <LoaderCircle className="animate-spin" />
+      ) : isFetched ? (
         <div
           className={cn(
-            "absolute top-[53px] right-0 flex-col gap-2 z-50 bg-gray-700 rounded-md min-w-[300px] p-2",
+            "absolute top-[53px] right-0 flex-col gap-2 z-50 bg-zinc-800 rounded-md min-w-[300px] p-2",
             open ? "flex mt-5" : "hidden"
           )}
         >
-          {result.map((value) => {
+          {searchResult?.data.map((value) => {
             const coverArt = value.relationships.find(
               (val) => val.type === "cover_art"
             );
 
             return (
-              <div key={value.id} className="flex gap-3">
+              <div key={value.id} className="flex gap-3 hover:bg-zinc-700">
                 <Image
                   src={`https://uploads.mangadex.org/covers/${value.id}/${coverArt?.attributes.fileName}`}
                   width={64}
