@@ -15,11 +15,21 @@ export const useDebounce = <T>(initialValue: T, delay = 500) => {
   return state;
 };
 
-export const useMediaQuery = ({ query }: { query: string }) => {
+const mediaQuery = {
+  md: "(min-width: 768px)",
+  sm: "(min-width: 640px)",
+  lg: "(min-width: 1024px)",
+};
+
+export const useMediaQuery = ({
+  query,
+}: {
+  query: keyof typeof mediaQuery;
+}) => {
   const [matches, setMatches] = useState(false);
 
   useEffect(() => {
-    const media = window.matchMedia(query);
+    const media = window.matchMedia(mediaQuery[query]);
 
     const listener = () => {
       setMatches(media.matches);

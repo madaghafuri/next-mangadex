@@ -8,6 +8,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { AlignLeft, Bookmark, History, Home } from "lucide-react";
 import Image from "next/image";
 import { SideNav } from "@/components/side-nav";
+import Provider from "./providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,34 +25,36 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={cn(inter.className, "p-0 m-0")}>
-        <main>
-          <div
-            className={cn(
-              "grid grid-cols-[10%,auto,20%] items-center gap-3 sticky top-0 z-50",
-              "px-5 py-2",
-              "bg-zinc-800"
-            )}
-          >
-            <Sheet>
-              <SheetTrigger asChild>
-                <AlignLeft />
-              </SheetTrigger>
-              <SheetContent side={"left"} className="bg-zinc-800">
-                <SideNav />
-              </SheetContent>
-            </Sheet>
-            <Link href={"/"}>
-              <Image
-                src={"/for_preferred_guest.png"}
-                alt="Logo"
-                width={50}
-                height={64}
-              />
-            </Link>
-            <SearchTitle />
-          </div>
-          {children}
-        </main>
+        <Provider>
+          <main>
+            <div
+              className={cn(
+                "grid grid-cols-[10%,auto,20%] items-center gap-3 sticky top-0 z-50",
+                "px-5 py-2",
+                "bg-zinc-800"
+              )}
+            >
+              <Sheet>
+                <SheetTrigger asChild>
+                  <AlignLeft />
+                </SheetTrigger>
+                <SheetContent side={"left"} className="bg-zinc-800">
+                  <SideNav />
+                </SheetContent>
+              </Sheet>
+              <Link href={"/"}>
+                <Image
+                  src={"/for_preferred_guest.png"}
+                  alt="Logo"
+                  width={50}
+                  height={64}
+                />
+              </Link>
+              <SearchTitle />
+            </div>
+            {children}
+          </main>
+        </Provider>
       </body>
     </html>
   );

@@ -12,6 +12,7 @@ import { Sheet, SheetContent } from "./ui/sheet";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, Home } from "lucide-react";
 import { SideNav } from "./side-nav";
+import { useMediaQuery } from "@/lib/hooks";
 
 export const PageViewer = ({
   chapter,
@@ -101,10 +102,8 @@ export const PageViewer = ({
       ) : null}
       <div className="flex flex-row-reverse overflow-x-hidden absolute top-0 left-0 right-0 bottom-0 m-auto">
         {chapter.chapter.dataSaver.map((val, index) => {
-          const thisPage = val.split("-")[0];
+          const thisPage = index + 1;
           const chapHash = val.split("-")[1];
-
-          const trimmedPage = thisPage.replace(/[a-zA-Z]/gi, "");
 
           const params = new URLSearchParams();
           params.append("hash", chapter.chapter.hash);
@@ -117,11 +116,10 @@ export const PageViewer = ({
               key={`${chapHash}-${thisPage}`}
               src={url}
               alt="Chapter Page"
-              width={512}
-              height={0}
               className={cn(
-                "object-contain",
-                page.toString() === trimmedPage ? "block" : "hidden"
+                "object-contain inset-0 m-auto",
+                "w-full md:w-[640px]",
+                page === thisPage ? "block" : "hidden"
               )}
               onClick={handleClick}
             />
