@@ -124,7 +124,7 @@ export default async function Home() {
           <div
             className={cn(
               "md:grid md:grid-cols-3 gap-3 md:max-w-[850px] md:bg-zinc-800 md:rounded-md",
-              "flex flex-col gap-3 max-w-full"
+              "flex flex-col gap-3 max-w-[400px] md:max-w-full"
             )}
           >
             {latestManga.data.map((value) => {

@@ -1,18 +1,12 @@
 "use client";
 
 import { ChapterResponse, MangaAttr } from "@/app/api";
-import {
-  useParams,
-  usePathname,
-  useRouter,
-  useSearchParams,
-} from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { KeyboardEvent, MouseEvent, useEffect, useState } from "react";
 import { Sheet, SheetContent } from "./ui/sheet";
 import { cn } from "@/lib/utils";
-import { ChevronLeft, Home } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { SideNav } from "./side-nav";
-import { useMediaQuery } from "@/lib/hooks";
 
 export const PageViewer = ({
   chapter,
@@ -106,10 +100,9 @@ export const PageViewer = ({
           const chapHash = val.split("-")[1];
 
           const params = new URLSearchParams();
-          params.append("hash", chapter.chapter.hash);
           params.append("url", chapter.baseUrl);
           params.append("fileName", val);
-          const url = "/api/chapter" + "?" + params.toString();
+          const url = "/api/" + chapter.chapter.hash + "?" + params.toString();
 
           return (
             <img
