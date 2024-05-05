@@ -63,12 +63,6 @@ export const SearchTitle = () => {
         onChange={handleChange}
         placeholder="Search"
         type="search"
-        onBlur={() => setOpen(false)}
-        onBlurCapture={() => {
-          setTimeout(() => {
-            setOpen(false);
-          }, 500);
-        }}
         className={cn(open ? "block" : "hidden")}
       />
       <div
@@ -99,20 +93,24 @@ export const SearchTitle = () => {
             );
 
             return (
-              <div key={value.id} className="flex gap-3 hover:bg-zinc-700">
-                <Image
-                  src={`https://uploads.mangadex.org/covers/${value.id}/${coverArt?.attributes.fileName}`}
-                  width={64}
-                  height={100}
-                  alt="Cover Image"
-                  className="rounded-md"
-                ></Image>
-                <div>
-                  <Link href={`/title/${value.id}`}>
+              <Link
+                key={value.id}
+                href={`/title/${value.id}`}
+                onClick={() => setOpen(false)}
+              >
+                <div key={value.id} className="flex gap-3 hover:bg-zinc-700">
+                  <Image
+                    src={`https://uploads.mangadex.org/covers/${value.id}/${coverArt?.attributes.fileName}`}
+                    width={64}
+                    height={100}
+                    alt="Cover Image"
+                    className="rounded-md"
+                  ></Image>
+                  <div>
                     <h4 className="font-bold">{value.attributes.title.en}</h4>
-                  </Link>
+                  </div>
                 </div>
-              </div>
+              </Link>
             );
           })}
         </div>
